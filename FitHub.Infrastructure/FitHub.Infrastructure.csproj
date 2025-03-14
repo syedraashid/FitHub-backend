@@ -13,9 +13,9 @@
 
   <ItemGroup>
     <Folder Include="BackgroundJobs\" />
-    <Folder Include="Cache\" />
     <Folder Include="Logging\" />
-    <Folder Include="Security\" />
+    <Folder Include="IRepository\" />
+    <Folder Include="Repository\" />
   </ItemGroup>
 
   <ItemGroup>

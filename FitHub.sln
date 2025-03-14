@@ -3,17 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitHub.Endpoints", "FitHub.Endpoints\FitHub.Endpoints.csproj", "{F2C392F0-85B8-4BBB-8E4E-092CB7A139AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitHub.Endpoints", "FitHub.Endpoints\FitHub.Endpoints.csproj", "{F2C392F0-85B8-4BBB-8E4E-092CB7A139AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitHub.Business", "FitHub.Business\FitHub.Business.csproj", "{06B98FA3-48A1-49B8-8B8E-5C883E6CF087}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitHub.Business", "FitHub.Business\FitHub.Business.csproj", "{06B98FA3-48A1-49B8-8B8E-5C883E6CF087}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitHub.Domain", "FitHub.Domain\FitHub.Domain.csproj", "{450A92BD-57AF-4DD2-898B-32E6CABE6EB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitHub.Domain", "FitHub.Domain\FitHub.Domain.csproj", "{450A92BD-57AF-4DD2-898B-32E6CABE6EB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitHub.Infrastructure", "FitHub.Infrastructure\FitHub.Infrastructure.csproj", "{FF23EAD4-C4E8-4528-918D-CE3CC6BE2A68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitHub.Infrastructure", "FitHub.Infrastructure\FitHub.Infrastructure.csproj", "{FF23EAD4-C4E8-4528-918D-CE3CC6BE2A68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitHub.Identity", "FitHub.Identity\FitHub.Identity.csproj", "{D5C32BF1-E908-48D1-B869-8FEB3D20DF92}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitHub.Tests", "FitHub.Tests\FitHub.Tests.csproj", "{4E285163-9CB6-4AA8-8BAD-9CDDD0E379A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitHub.Tests", "FitHub.Tests\FitHub.Tests.csproj", "{4E285163-9CB6-4AA8-8BAD-9CDDD0E379A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,10 +35,6 @@ Global
 		{FF23EAD4-C4E8-4528-918D-CE3CC6BE2A68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF23EAD4-C4E8-4528-918D-CE3CC6BE2A68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF23EAD4-C4E8-4528-918D-CE3CC6BE2A68}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D5C32BF1-E908-48D1-B869-8FEB3D20DF92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D5C32BF1-E908-48D1-B869-8FEB3D20DF92}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D5C32BF1-E908-48D1-B869-8FEB3D20DF92}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D5C32BF1-E908-48D1-B869-8FEB3D20DF92}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4E285163-9CB6-4AA8-8BAD-9CDDD0E379A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4E285163-9CB6-4AA8-8BAD-9CDDD0E379A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E285163-9CB6-4AA8-8BAD-9CDDD0E379A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
