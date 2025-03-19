@@ -12,10 +12,10 @@ namespace FitHub.Domain.DataBase
     {
         public FitHubDbContext(DbContextOptions<FitHubDbContext> options) : base(options) { }
 
-        DbSet<User> Users { get; set; }
-        DbSet<Member> Members { get; set; }
-        DbSet<Nutritionist> Nutritionists { get; set; }
-        DbSet<Trainer> Trainers { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Member> Members { get; set; }
+        public virtual DbSet<Nutritionist> Nutritionists { get; set; }
+        public virtual DbSet<Trainer> Trainers { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
