@@ -38,20 +38,13 @@ namespace FitHub.Endpoints.ServiceConfigurations
                     ValidIssuer = configuration["JwtSettings:Issuer"],
                     ValidAudience = configuration["JwtSettings:Audience"]
                 };
-            })
-            .AddGoogle(google =>
-            {
-                google.ClientId = configuration["Google:ClientId"];
-                google.ClientSecret = configuration["Google:ClientSecret"];
-                google.CallbackPath = "/signin-google";
-                google.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             });
-
 
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend",
-                    builder => builder.AllowAnyMethod()
+                    builder => builder.WithOrigins("http://localhost:3000")
+                                     .AllowAnyMethod()
                                       .AllowAnyHeader()
                                       .AllowCredentials());
             });
