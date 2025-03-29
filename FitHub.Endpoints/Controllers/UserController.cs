@@ -11,6 +11,9 @@ using FitHub.Infrastructure.Security;
 using Newtonsoft.Json;
 using Google.Apis.Auth;
 using FitHub.Business.Dtos;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace FitHub.Endpoints.Controllers
 {
@@ -56,14 +59,73 @@ namespace FitHub.Endpoints.Controllers
 
             if (user == null)
             {
-                user = new User { OAuthId = payload.Subject, Email = payload.Email, Name = payload.Name };
+                user = new User { OAuthId = payload.Subject, Email = payload.Email, Name = payload.Name, RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7) };
                 _context.Users.Add(user);
-                await _context.SaveChangesAsync();
             }
 
             // 🔹 Generate JWT token
-            var token = _tokenGenerator.GenerateJwtToken(user);
-            return Ok(new { token, user });
+            var accessToken = _tokenGenerator.GenerateJwtAccessToken(user);
+            var refreshToken = _tokenGenerator.GenerateJwtAccessToken(user);
+
+            user.RefreshToken = refreshToken;
+            await _context.SaveChangesAsync();
+            return Ok(new AuthResponseDto{ user = user, accessToken = accessToken ,refreshToken = refreshToken});
+        }
+
+        [HttpPost("Refresh")]
+        public async Task<IActionResult> RefreshAccessToken(string RefershToken)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
+
+            try
+            {
+                var validationParams = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = key,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = false // Allow expired tokens to be validated
+                };
+
+                var principal = handler.ValidateToken(RefershToken, validationParams, out SecurityToken validatedToken);
+                var jwtToken = validatedToken as JwtSecurityToken;
+
+                if (jwtToken == null)
+                    return Unauthorized(new { message = "Invalid refresh token" });
+
+                var userId = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+                var user = await _context.Users.FindAsync(userId);
+
+                if (user == null || user.RefreshToken != RefershToken)
+                    return Unauthorized(new { message = "Invalid refresh token" });
+
+                if (user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+                {
+                    await _context.SaveChangesAsync();
+                    return Unauthorized(new { message = "Refresh token expired" });
+                }
+
+                // Generate new tokens
+                var newAccessToken = _tokenGenerator.GenerateJwtAccessToken(user);
+                var newRefreshToken = _tokenGenerator.GenerateJwtRefreshToken(user);
+
+                user.RefreshToken = newRefreshToken;
+                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    accessToken = newAccessToken,
+                    refreshToken = newRefreshToken
+                });
+            }
+            catch
+            {
+                return Unauthorized(new { message = "Invalid refresh token" });
+            }
+
         }
     }
 }

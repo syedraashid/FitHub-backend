@@ -21,6 +21,8 @@ namespace FitHub.Domain.Models
         public Nutritionist? Nutritionist { get; set; }
         public Trainer? Trainer { get; set; }
         public Member? Member { get; set; }
+        public string RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiryTime { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
