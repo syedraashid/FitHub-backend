@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace FitHub.Endpoints.Controllers
 {
@@ -66,7 +67,7 @@ namespace FitHub.Endpoints.Controllers
         }
 
         [HttpPost("Refresh")]
-        public async Task<IActionResult> RefreshAccessToken(string RefershToken)
+        public async Task<IActionResult> RefreshAccessToken([FromBody]string RefershToken)
         {
             var handler = new JwtSecurityTokenHandler();
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
@@ -79,28 +80,22 @@ namespace FitHub.Endpoints.Controllers
                     IssuerSigningKey = key,
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    ValidateLifetime = false // Allow expired tokens to be validated
+                    ValidateLifetime = false
                 };
 
                 var principal = handler.ValidateToken(RefershToken, validationParams, out SecurityToken validatedToken);
-                var jwtToken = validatedToken as JwtSecurityToken;
 
-                if (jwtToken == null)
+                if (validatedToken is not JwtSecurityToken jwtToken)
                     return Unauthorized(new { message = "Invalid refresh token" });
 
-                var userId = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-                var user = await _context.Users.FindAsync(userId);
+                var user = await _context.Users.FirstOrDefaultAsync(_ => _.RefreshToken == RefershToken);
 
                 if (user == null || user.RefreshToken != RefershToken)
                     return Unauthorized(new { message = "Invalid refresh token" });
 
                 if (user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-                {
-                    await _context.SaveChangesAsync();
                     return Unauthorized(new { message = "Refresh token expired" });
-                }
 
-                // Generate new tokens
                 var newAccessToken = _tokenGenerator.GenerateJwtAccessToken(user);
                 var newRefreshToken = _tokenGenerator.GenerateJwtRefreshToken(user);
 
@@ -126,12 +121,12 @@ namespace FitHub.Endpoints.Controllers
         {
             var User = _context.Users.FirstOrDefault(_ => _.Email == request.Email);
 
-            if (User == null) Unauthorized("User not Found");
+            if (User == null) return Unauthorized("User not Found");
 
             var ValidateResult = _passwordHasher.VerifyHashedPassword(null, User.Password, request.Password);
             bool IsvalidUser = ValidateResult == PasswordVerificationResult.Success;
 
-            if (!IsvalidUser) Unauthorized("Password Doesn't Match");
+            if (!IsvalidUser) return Unauthorized("Password Doesn't Match");
 
             return Ok(new AuthResponseDto
             {
