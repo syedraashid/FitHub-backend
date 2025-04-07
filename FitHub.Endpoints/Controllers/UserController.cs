@@ -1,11 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using FitHub.Domain.Enums;
+﻿using Microsoft.AspNetCore.Mvc;
 using FitHub.Domain.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using FitHub.Domain.DataBase;
 using FitHub.Infrastructure.Security;
 using Newtonsoft.Json;
@@ -14,6 +8,7 @@ using FitHub.Business.Dtos;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
 
 namespace FitHub.Endpoints.Controllers
 {
@@ -24,8 +19,9 @@ namespace FitHub.Endpoints.Controllers
         private readonly JwtTokenGenerator _tokenGenerator;
         private readonly FitHubDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly PasswordHasher<object> _passwordHasher = new();
 
-        public UserController(JwtTokenGenerator tokenGenerator , FitHubDbContext context, IConfiguration configurations)
+        public UserController(JwtTokenGenerator tokenGenerator, FitHubDbContext context, IConfiguration configurations)
         {
             _tokenGenerator = tokenGenerator;
             _context = context;
@@ -37,7 +33,6 @@ namespace FitHub.Endpoints.Controllers
         {
             var client = new HttpClient();
 
-            // 🔹 Exchange code for access_token and id_token
             var tokenResponse = await client.PostAsync("https://oauth2.googleapis.com/token", new FormUrlEncodedContent(new Dictionary<string, string>
                 {
                     { "client_id", _configuration["Google:ClientId"] },
@@ -51,7 +46,6 @@ namespace FitHub.Endpoints.Controllers
 
             var tokenData = JsonConvert.DeserializeObject<GoogleResponseDto>(await tokenResponse.Content.ReadAsStringAsync());
 
-            // 🔹 Verify Google Token
             var payload = await GoogleJsonWebSignature.ValidateAsync(tokenData.IdToken);
             if (payload == null) return Unauthorized("Invalid Google Token");
 
@@ -63,13 +57,12 @@ namespace FitHub.Endpoints.Controllers
                 _context.Users.Add(user);
             }
 
-            // 🔹 Generate JWT token
             var accessToken = _tokenGenerator.GenerateJwtAccessToken(user);
             var refreshToken = _tokenGenerator.GenerateJwtAccessToken(user);
 
             user.RefreshToken = refreshToken;
             await _context.SaveChangesAsync();
-            return Ok(new AuthResponseDto{ user = user, accessToken = accessToken ,refreshToken = refreshToken});
+            return Ok(new AuthResponseDto { user = user, accessToken = accessToken, refreshToken = refreshToken });
         }
 
         [HttpPost("Refresh")]
@@ -126,6 +119,55 @@ namespace FitHub.Endpoints.Controllers
                 return Unauthorized(new { message = "Invalid refresh token" });
             }
 
+        }
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(AuthRequestDto request)
+        {
+            var User = _context.Users.FirstOrDefault(_ => _.Email == request.Email);
+
+            if (User == null) Unauthorized("User not Found");
+
+            var ValidateResult = _passwordHasher.VerifyHashedPassword(null, User.Password, request.Password);
+            bool IsvalidUser = ValidateResult == PasswordVerificationResult.Success;
+
+            if (!IsvalidUser) Unauthorized("Password Doesn't Match");
+
+            return Ok(new AuthResponseDto
+            {
+                accessToken = _tokenGenerator.GenerateJwtAccessToken(User),
+                refreshToken = _tokenGenerator.GenerateJwtRefreshToken(User),
+                user = User
+            });
+        }
+
+        [HttpPost("SignUp")]
+        public async Task<IActionResult> SignUp(AuthRequestDto request)
+        {
+            if (string.IsNullOrEmpty(request.Email) && string.IsNullOrEmpty(request.Password)) return BadRequest("Improper Request");
+
+            var IsUserExists = _context.Users.FirstOrDefault(_ => _.Email == request.Email);
+
+            if (IsUserExists != null) return BadRequest("Mail ID ALready Exist");
+
+            var User = new User
+            {
+                Name = request.userName ?? "" ,
+                Email = request.Email,
+                Password = _passwordHasher.HashPassword(null ,request.Password),
+            };
+
+            await _context.Users.AddAsync(User);
+            var refreshToken = _tokenGenerator.GenerateJwtRefreshToken(User);
+            User.RefreshToken = refreshToken;
+            User.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            await _context.SaveChangesAsync();
+            return Ok(new AuthResponseDto
+            {
+                accessToken = _tokenGenerator.GenerateJwtAccessToken(User),
+                refreshToken = refreshToken,
+                user = User
+            });
         }
     }
 }
