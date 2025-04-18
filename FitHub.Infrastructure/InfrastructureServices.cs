@@ -1,11 +1,8 @@
 ﻿using FitHub.Infrastructure.Security;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FitHub.Infrastructure
 {
@@ -13,6 +10,10 @@ namespace FitHub.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services , IConfiguration configuration) {
             services.AddScoped<JwtTokenGenerator>();
+            services.AddHangfire(config =>
+            config.UsePostgreSqlStorage(configuration.GetConnectionString("connectionString")));
+
+            services.AddHangfireServer();
             return services;
         }
     }

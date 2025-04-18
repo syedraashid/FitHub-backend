@@ -51,6 +51,7 @@ namespace FitHub.Endpoints.ServiceConfigurations
             });
 
             services.AddAuthorization();
+            services.AddSignalR();
             services.AddInfrastructureServices(configuration);
             services.AddScoped<IUserRepo, UserRepo>();
             services.AddScoped<IUserServices, UserServices>();

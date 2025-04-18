@@ -5,6 +5,9 @@ using System.IdentityModel.Tokens.Jwt;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using FitHub.Infrastructure.SignalR.Hubs;
+using FitHub.Infrastructure.BackgroundJobs;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,7 +53,11 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+app.UseAuthentication();
 app.UseAuthorization();
+app.MapHub<NotificationHub>("/hubs/notifications");
+app.UseHangfireDashboard("/hangfire");
+HangfireJobs.RegisterDailyNotification();
 
 app.MapControllers();
 
