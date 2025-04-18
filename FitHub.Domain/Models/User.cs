@@ -17,6 +17,7 @@ namespace FitHub.Domain.Models
         public string Email { get; set; }
         public string? Password { get; set; }
         public UserRoles Role { get; set; }
+        public bool IsProfileSetupComplete { get; set; }
         //Navigation Property
         public Nutritionist? Nutritionist { get; set; }
         public Trainer? Trainer { get; set; }

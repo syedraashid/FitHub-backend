@@ -1,8 +1,9 @@
-﻿using FitHub.Domain.DataBase;
+﻿using FitHub.Business.Interfaces;
+using FitHub.Business.IRepository;
+using FitHub.Business.Services;
+using FitHub.Domain.DataBase;
 using FitHub.Infrastructure;
-using FitHub.Infrastructure.Security;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
+using FitHub.Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -51,7 +52,8 @@ namespace FitHub.Endpoints.ServiceConfigurations
 
             services.AddAuthorization();
             services.AddInfrastructureServices(configuration);
-
+            services.AddScoped<IUserRepo, UserRepo>();
+            services.AddScoped<IUserServices, UserServices>();
 
             return services;
         }

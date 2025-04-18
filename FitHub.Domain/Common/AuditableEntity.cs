@@ -8,9 +8,9 @@ namespace FitHub.Domain.Common
 {
     public class AuditableEntity
     {
-        public int CreateBy { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public int ModifiedBy { get; set; }
-        public DateTime ModifiedAt { get; set; } = DateTime.UtcNow;
+        public string? CreateBy { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string? ModifiedBy { get; set; }
+        public DateTime? ModifiedAt { get; set; }
     }
 }

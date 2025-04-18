@@ -10,6 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using FitHub.Business.Interfaces;
 
 namespace FitHub.Endpoints.Controllers
 {
@@ -21,12 +22,14 @@ namespace FitHub.Endpoints.Controllers
         private readonly FitHubDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly PasswordHasher<object> _passwordHasher = new();
+        private readonly IUserServices _userServices;
 
-        public UserController(JwtTokenGenerator tokenGenerator, FitHubDbContext context, IConfiguration configurations)
+        public UserController(JwtTokenGenerator tokenGenerator, FitHubDbContext context, IConfiguration configurations, IUserServices userServices)
         {
             _tokenGenerator = tokenGenerator;
             _context = context;
             _configuration = configurations;
+            _userServices = userServices;
         }
 
         [HttpPost("Google-Login")]
@@ -119,7 +122,7 @@ namespace FitHub.Endpoints.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(AuthRequestDto request)
         {
-            var User = _context.Users.FirstOrDefault(_ => _.Email == request.Email);
+            var User = await _context.Users.FirstOrDefaultAsync(_ => _.Email == request.Email);
 
             if (User == null) return Unauthorized("User not Found");
 
@@ -163,6 +166,14 @@ namespace FitHub.Endpoints.Controllers
                 refreshToken = refreshToken,
                 user = User
             });
+        }
+
+        [HttpPost("CompleteProfileSetup")]
+        public async Task<IActionResult> ProfileSetUp(ProfileSetupDto profile)
+        {
+            var result =  await _userServices.CompleteProfileSetup(profile);
+
+             return result != null ? Ok(result) : BadRequest();
         }
     }
 }

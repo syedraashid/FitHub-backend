@@ -1,4 +1,5 @@
-﻿using FitHub.Domain.Enums;
+﻿using FitHub.Domain.Common;
+using FitHub.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FitHub.Domain.Models
 {
-    public class Member
+    public class Member:AuditableEntity
     {
         public int Id { get; set; }
         public string FullName { get; set; }
