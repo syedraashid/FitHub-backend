@@ -9,7 +9,6 @@ namespace FitHub.Business.Dtos
     public class NotificationDto
     {
         public string Message { get; set; }
-        public DateTime Date { get; set; } = DateTime.UtcNow;
-        public string UserName { get; set; }
+        public string Datetime { get; set; } = DateTime.UtcNow.ToString();
     }
 }

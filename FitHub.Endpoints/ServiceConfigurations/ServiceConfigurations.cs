@@ -7,6 +7,8 @@ using FitHub.Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 namespace FitHub.Endpoints.ServiceConfigurations
@@ -25,7 +27,7 @@ namespace FitHub.Endpoints.ServiceConfigurations
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddCookie()
                 .AddJwtBearer(options =>
-            {
+              {
                 var key = Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]);
                 options.RequireHttpsMetadata = true;
                 options.SaveToken = true;
@@ -39,7 +41,7 @@ namespace FitHub.Endpoints.ServiceConfigurations
                     ValidIssuer = configuration["JwtSettings:Issuer"],
                     ValidAudience = configuration["JwtSettings:Audience"]
                 };
-            });
+              });
 
             services.AddCors(options =>
             {

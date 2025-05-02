@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using FitHub.Infrastructure.SignalR.Hubs;
 using FitHub.Infrastructure.BackgroundJobs;
 using Hangfire;
+using FitHub.Endpoints.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,10 +54,15 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<NotificationHub>("/hubs/notifications");
-app.UseHangfireDashboard("/hangfire");
+
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new AllowAllDashboardAuthorizationFilter() }
+});
 HangfireJobs.RegisterDailyNotification();
 
 app.MapControllers();

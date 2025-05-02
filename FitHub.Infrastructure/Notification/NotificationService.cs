@@ -1,11 +1,6 @@
 ﻿using FitHub.Business.Dtos;
 using FitHub.Infrastructure.SignalR.Hubs;
 using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FitHub.Infrastructure.Notification
 {
@@ -18,14 +13,14 @@ namespace FitHub.Infrastructure.Notification
             _hubContext = hubContext;
         }
 
-        public async Task SendNotification(int userid ,NotificationDto message)
+        public async Task SendNotification(string userEmail ,NotificationDto message)
         {
-            await _hubContext.Clients.Users(userid.ToString()).SendAsync("SendNotification", message);
+            await _hubContext.Clients.Users(userEmail).SendAsync("SendNotification", message);
         }
 
         public async Task DailyNotification()
         {
-            await _hubContext.Clients.All.SendAsync("SendNotification", "Pleasent Day");
+            await _hubContext.Clients.All.SendAsync("SendNotification", "Have a Pleasent Day");
         }
     }
 }
