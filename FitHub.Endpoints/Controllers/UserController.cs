@@ -65,6 +65,7 @@ namespace FitHub.Endpoints.Controllers
             var refreshToken = _tokenGenerator.GenerateJwtAccessToken(user);
 
             user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _context.SaveChangesAsync();
             return Ok(new AuthResponseDto { user = user, accessToken = accessToken, refreshToken = refreshToken });
         }
