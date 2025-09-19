@@ -21,6 +21,7 @@ namespace FitHub.Domain.Enums
         Admin=1,
         Member,
         Nuritionist,
-        Trainer
+        Trainer,
+        Tester
     }
 }
