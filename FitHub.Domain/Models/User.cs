@@ -17,10 +17,13 @@ namespace FitHub.Domain.Models
         public string Email { get; set; }
         public string? Password { get; set; }
         public UserRoles Role { get; set; }
+        public bool IsProfileSetupComplete { get; set; }
         //Navigation Property
         public Nutritionist? Nutritionist { get; set; }
         public Trainer? Trainer { get; set; }
         public Member? Member { get; set; }
+        public string RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiryTime { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

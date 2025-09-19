@@ -12,10 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="BackgroundJobs\" />
     <Folder Include="Logging\" />
-    <Folder Include="IRepository\" />
-    <Folder Include="Repository\" />
   </ItemGroup>
 
   <ItemGroup>

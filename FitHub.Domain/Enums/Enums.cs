@@ -19,8 +19,9 @@ namespace FitHub.Domain.Enums
     public enum UserRoles
     {
         Admin=1,
-        User,
+        Member,
         Nuritionist,
-        Trainer
+        Trainer,
+        Tester
     }
 }
