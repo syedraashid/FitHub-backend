@@ -14,7 +14,8 @@ namespace FitHub.Domain.Enums
         GeneralHealth,
         Endurance,
         Strength,
-        Flexibility
+        Flexibility,
+        testing
     }
     public enum UserRoles
     {
